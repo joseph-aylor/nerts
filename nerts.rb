@@ -3,6 +3,7 @@
 require 'optparse'
 require 'date'
 
+#These should be in a config file
 NERTS_DIR = ENV['HOME'] + "/.nerts"
 NOTES_DIR = ENV['HOME'] + "/.nerts/notes"
 EDITOR = "vim"
@@ -26,7 +27,7 @@ class Note
 
   #only read the note's contents if needed.
   #it can get quite large.
-  def self.get_files(read_contents)
+  def self.get_files(read_contents = true)
     files = Dir.entries(".")
                .select { |file| file != "." && file != ".." }
                .sort { |x,y| File.mtime(x) <=> File.mtime(y) }
@@ -44,7 +45,7 @@ class Note
     return notes
   end
 
-  def initialize(name, id, content="")
+  def initialize(name, id, content = "")
     @name = name
     @file_name = name
     @id = id
@@ -52,10 +53,12 @@ class Note
   end
 
   def to_s
+    #This is not cross platform.
     "#{File.mtime(@file_name)}\t#{@id}\t#{@name}"
   end
 
   def edit
+    #This is not cross platform.
     exec("#{EDITOR} '#{NOTES_DIR}/#{@file_name}'")
   end
 end
@@ -83,6 +86,7 @@ OptionParser.new do |opts|
     files.each { |f| puts f }
   end
 
+  #need to add the id limit to search
   opts.on("-s text", String, "Search All Notes for the specicied text") do |text|
     text.downcase!
     files = Note.get_files(true)
